@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+<title>Websocket</title>
+
+<style>
+* {box-sizing: border-box;}
+@viewport{zoom: 1.0;width: extend-to-zoom;}
+html{height:100%;}body{height:100%;margin:0px;font-size:14px;font-family: Arial, Helvetica, sans-serif;}.row::after{content: "";clear: both;display: table;}
+[class*="col-"] {
+    float: left;
+    padding: 1px 15px;
+}
+.col-1 {width: 8.33%;}.col-2 {width: 16.66%;}.col-3 {width: 25%;}.col-4 {width: 33.33%;}.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}.col-7 {width: 58.33%;}.col-8 {width: 66.66%;}.col-9 {width: 75%;}.col-10 {width: 83.33%;}.col-11 {width: 91.66%;}.col-12 {width: 100%;}
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    [class*="col-"] {
+        width: 100%;
+    }   
+}
+#body{height:78%;min-height: 78%;height: auto !important;padding:0.6em;}#header{height:12%;/*5em*/;background:#cceeff;margin-bottom:10px;}
+#footer{height:5%;border:1px solid;}.form_field{padding:0.4em 0;font-weight:bold;}#conversation_wrapper{height:300px;border:1px solid #a1a1a1;overflow-y:scroll;}#conversation_wrapper:hover{overflow:auto;}#conversation{}
+#user_list{border:2px solid #000;padding:2px;width:20em;}li{cursor:pointer;}li:hover{color:blue;}.message{margin:0px;padding-bottom:5px;line-height:1.3em;}.user_name{color:#a1a1a1;}.stime{float:right;}
+#writing{padding:7px;background:#99ffff;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius:3px;margin:3px 0;font-size:10;visibility:hidden;}#text-msg{height:4em;}#msg{width:80%;height:100%;}
+#send{color:#1aa3ff;background:#f0f2f4;float:right;border:1px solid #a1a1a1;width:19%;text-align:center;line-height:4em;-webkit-border-radius: 4px; -moz-border-radius: 4px;border-radius:4px;}
+#send:hover{background:#e9ecef;}ul{list-style-type: none;margin: 0;padding: 0;}li{padding:0px;}.chatUser{cursor:pointer;}.chatUser:hover{font-weight:bold;}div{lborder:1px solid;}
+</style>
+</head>
+
+<body>
+<div class="row" style="dpadding:1em;">
+	<div class="col-8">
+	</div>
+	<div class="col-4" dstyle="padding:1em;">
+		<button id="command1">Command 1</button>
+		<button id="command2">Command 2</button>
+		<button id="command3">Command 3</button>
+		<div id="chat" style="padding:1em;border:3px solid #66ffcc;">
+			<div id="header" style="padding:0.3em;">
+				<p id="chatUser"></p>
+				<p id="receiver" style="font-weight:bold">WebsocketServer response</p>
+			</div>
+			<div style="position:relative; ">
+				<div id="curtain" style="position:absolute; background:#a1a1a1;opacity: 0.5; z-index:1000;height:100%;width:100%">
+				</div>
+				
+				<div id="conversation_wrapper">
+					<div id="conversation"></div>
+				</div>
+			</div>
+		</div>
+	</div>	
+</div>	
+
+<script type="text/javascript" src="user.js"></script>
+
+<script>
+
+WebsocketClient.init();
+
+window.addEventListener("DOMContentLoaded", function(){
+	document.getElementById('command1').addEventListener('click', function(){
+		WebsocketClient.sendCommand('Command_1: i=a b c d e f g h i');
+	});
+	document.getElementById('command2').addEventListener('click', function(){
+		var x=Math.floor(Math.random()*100);
+		var y=Math.floor(Math.random()*100);
+		WebsocketClient.sendCommand('Command_2:'+x+','+y);
+	});
+	document.getElementById('command3').addEventListener('click', function(){
+		WebsocketClient.sendCommand('Command_3:some data 1 2 3 4 5');
+	});
+})
+
+</script>
+
+</body>
+
+
+</html>

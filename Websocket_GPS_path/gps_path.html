@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>ECEF Path Generator</title>
+<style>
+
+* {box-sizing: border-box;padding: 0; margin: 0; }
+* {    -webkit-user-select: none;    -khtml-user-select: none;    -moz-user-select: -moz-none;    -o-user-select: none;    user-select: none;}
+body {background: #fff;padding: 1px;}.row::after {  content: "";  clear: both;  display: table;}
+[class*="col-"] {  float: left;  padding: 15px;}
+html {font-family: "Lucida Sans", sans-serif;}
+@media only screen and (min-width: 600px) {
+  .col-s-1 {width: 8.33%;}  .col-s-2 {width: 16.66%;}  .col-s-3 {width: 25%;}  .col-s-4 {width: 33.33%;}  .col-s-5 {width: 41.66%;}.col-s-6 {width: 50%;}
+  .col-s-7 {width: 58.33%;}  .col-s-8 {width: 66.66%;}  .col-s-9 {width: 75%;}  .col-s-10 {width: 83.33%;}  .col-s-11 {width: 91.66%;}  .col-s-12 {width: 100%;}
+}
+@media only screen and (min-width: 768px) {
+  .col-1 {width: 8.33%;}  .col-2 {width: 16.66%;}  .col-3 {width: 25%;}  .col-4 {width: 33.33%;}  .col-5 {width: 41.66%;}  .col-6 {width: 50%;}  .col-7 {width: 58.33%;}  .col-8 {width: 66.66%;}  .col-9 {width: 75%;}  .col-10 {width: 83.33%;}  .col-11 {width: 91.66%;}  .col-12 {width: 100%;}
+}
+#canvasContainer {width:100%;	border:1px solid black;position:relative;}#canvas {width:100%;position:absolute;z-index:80;}#map {	width:100%;	position:absolute;z-index:10;}.font1{font-size: 25px;}
+</style>
+
+	<script type="text/javascript" src="raphael.min.js"></script>  
+		<!-- -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" dintegrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" dintegrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+	<!-- -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+
+<div class="row">
+	<div class="col-2 col-s-2 rightBlock">
+		<div id="left_pannel" style="overflow-x: hidden;overflow-y: auto; padding-right: 10px;">
+		<ul id="gadgets">
+			<li>
+				<div>Total Distance</div>
+				<div class="font1" id="Tdistance" style="display:inline;">0.00</div>
+				<div style="display:inline;">km</div>
+			</li>
+		</ul>
+		<div style="display:table;padding:1px; dborder:1px solid; width:100%;">
+			<div style="display:table-row;">
+				<div style="margin-top:0px;">
+					<input id="pauseButton" type="button" style="width:100%;display:none;margin-right: 3px;" value="Pause">
+				</div>
+			</div>
+			<div style="display:table-row;">
+				<div style="display: inline-block;">
+					<div style="font-size: 12px;margin-top:6px;">Zoom</div>
+					<input id="zoom_less" type="button" style="min-width:20px;margin-right: 5px;" value="-"/>
+					<input id="zoom_more" type="button" style="min-width:20px;margin-right: 10px;" value="+"/>
+				</div>
+			</div>
+		</div>
+ 		</div>
+ 	</div>
+	<div id="container" class="col-s-10" style="padding:0px;">
+		<div id="canvasContainer">
+			<div id="canvas"></div>
+			<div id="map"></div>
+		</div>
+	</div>
+</div>
+
+</body>
+<script type="text/javascript" src="gps_path.js"></script>
+
+</html>
