@@ -39,7 +39,7 @@ class WebsocketServer
 	public:
 		WebsocketServer(const char* ip, uint16_t port);
 		WebsocketServer(unsigned int inaddr, uint16_t port);
-		~WebsocketServer();
+		virtual ~WebsocketServer();
 
 		/**
 		* Stop the server from listening and accepting new requests
