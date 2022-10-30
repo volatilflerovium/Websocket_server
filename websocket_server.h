@@ -133,7 +133,7 @@ class WebsocketServer
 		int m_buffer64Size;
 		bool m_exit;
 
-		static const char* base64Index;
+		static const char* c_base64Index;
 
 		bool getData(int client);
 		ssize_t sendData(int client, const std::string& text);
@@ -222,10 +222,10 @@ inline ssize_t WebsocketServer::sendData(int client, const std::string& data)
 
 inline void WebsocketServer::encoder(unsigned char a, unsigned char b, unsigned char c, int j)
 {
-	m_encode64[j++]=base64Index[a>>2];
-	m_encode64[j++]=base64Index[((a&3)<<4) | (b>>4)];
-	m_encode64[j++]=base64Index[((b&15)<<2) | (c>>6)];				
-	m_encode64[j++]=base64Index[c & 63];		
+	m_encode64[j++]=c_base64Index[a>>2];
+	m_encode64[j++]=c_base64Index[((a&3)<<4) | (b>>4)];
+	m_encode64[j++]=c_base64Index[((b&15)<<2) | (c>>6)];				
+	m_encode64[j++]=c_base64Index[c & 63];		
 }
 
 //----------------------------------------------------------------------

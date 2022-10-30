@@ -2,7 +2,7 @@
 
 //----------------------------------------------------------------------
 
-const char* WebsocketServer::base64Index="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const char* WebsocketServer::c_base64Index="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 //----------------------------------------------------------------------
 
@@ -193,7 +193,7 @@ void WebsocketServer::encodeData(const std::string& text)
 		m_pack[1]=m_pack[1] & ~(1<<7);			
 		m_dataLength=2;
 	}
-	else if(length>125 && length<65536){
+	else if(length<65536){
 		m_pack[1]=static_cast<unsigned char>(126);
 		m_pack[2]=static_cast<unsigned short>(length);
 					
@@ -211,7 +211,7 @@ void WebsocketServer::encodeData(const std::string& text)
 
 		m_dataLength=5;
 	}
-	else if(length>=65536){		
+	else{// if(length>=65536)
 		m_pack[1]=static_cast<unsigned char>(127);
 
 		union Package2
