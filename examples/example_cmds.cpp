@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "websocket_server.h"
+#include "websocket/websocket_server.h"
 
 sig_atomic_t signal_caught = 0;
 bool exitLoop=false;
@@ -25,32 +25,34 @@ int main(int argc, char** argv)
 {
 	signal(SIGINT, &sigint_handler);
 
-	const uint16_t PORT=22002;
+	const uint16_t PORT=22001;
 
 	try {
 		WebsocketServer server("127.0.0.1", PORT);
-		//WebSocketServer server(INADDR_LOOPBACK, PORT);//INADDR_ANY
 		serverPtr=&server;
 
-		std::ifstream gpsData;
-		gpsData.open("Websocket_GPS_path/GPS_data.txt");
+		Command cmd1=[](const std::string& data){
+			return "Do some calculations and return result as string.";
+		};
+		
+		server.subscribeCommand("Command_1", cmd1);
 
-		std::string coordinates;
-		coordinates.reserve(100);
-		while(true){
-			if(exitLoop){
-				break;
+		server.subscribeCommand("Command_2", [](const std::string& params){
+			std::size_t n=params.find(",");
+		
+			int x=0, y=0;
+			if(n!=std::string::npos){
+				x=std::stoi(params.substr(0, n));
+				y=std::stoi(params.substr(n+1));
 			}
-			if(server.clientsListening()>0){
-				std::getline(gpsData, coordinates);
-				if(coordinates.length()<10){
-					break;
-				}
-				server.pushData(coordinates);
-				coordinates.clear();
-			}
-			usleep(1000000);
-		}
+			return std::to_string(x)+"+"+std::to_string(y)=std::to_string(x+y);
+		});
+
+		server.subscribeCommand("Command_3", [](const std::string& data){
+			return "Command 3 do operation 1+2=3";
+		});
+
+		server.processRequests();
 	}
 	catch (const std::exception &e) {
 		std::cerr << "Caught unhandled exception:\n";

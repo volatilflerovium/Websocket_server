@@ -26,8 +26,6 @@
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 
-#include "sha1.hpp"
-
 const unsigned int MAX_SIZE=2048;
 
 //======================================================================
@@ -116,7 +114,6 @@ class WebsocketServer
 		Sockaddr m_sockAddr;
 		std::queue<Client> m_requests;
 		std::map<const std::string, Command> m_commands;
-		SHA1 m_sha1;
 		std::mutex m_controlMutex;
 		std::condition_variable m_cv;
 		std::unique_lock<std::mutex> m_ulock;
@@ -181,6 +178,11 @@ inline void WebsocketServer::stop()
 {
 	m_exit=true;
 	m_cv.notify_one();
+	if(m_fd>0){
+		::shutdown(m_fd, SHUT_RDWR);
+		::close(m_fd);
+		m_fd=-1;
+	}
 }
 
 //----------------------------------------------------------------------

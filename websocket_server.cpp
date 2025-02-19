@@ -1,51 +1,9 @@
-#include "websocket_server.h"
+#include "websocket/websocket_server.h"
+#include "sha1/sha1.hpp"
 
 //----------------------------------------------------------------------
 
 const char* WebsocketServer::c_base64Index="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-//----------------------------------------------------------------------
-
-bool WebsocketServer::pushData(const std::string& data)
-{
-	bool a=true;
-	for(int i=1; i<m_nfds; i++){
-		if(sendData(m_fds[i].fd, data)<0){
-			a=false;
-		}
-	}
-	return a;
-}
-
-//----------------------------------------------------------------------
-
-void WebsocketServer::processRequests()
-{
-	std::map<std::string, Command>::iterator it;
-	while(true){
-		m_cv.wait(m_ulock, [this]{
-			return m_commands.size()>0 && (!m_requests.empty() || m_exit);
-		});
-
-		if(m_exit){
-			break;
-		}
-
-		Client& client=m_requests.front();
-
-		std::string& command=client.m_command;
-		std::size_t n=command.find_first_of(':');
-		if(n!= std::string::npos){
-			it=m_commands.find(command.substr(0, n));
-
-			if(it!=m_commands.end()){
-				std::string result=it->second(command.substr(n+1));
-				sendData(client.m_fd, result);
-			}
-		}
-		m_requests.pop();
-	}
-}
 
 //----------------------------------------------------------------------
 
@@ -89,6 +47,49 @@ m_exit(false)
 	m_nfds=1;
 	
 	m_trd=new std::thread(&WebsocketServer::listening, this);
+}
+
+//----------------------------------------------------------------------
+
+bool WebsocketServer::pushData(const std::string& data)
+{
+	bool a=true;
+	for(int i=1; i<m_nfds; i++){
+		if(sendData(m_fds[i].fd, data)<0){
+			a=false;
+		}
+	}
+	return a;
+}
+
+//----------------------------------------------------------------------
+
+void WebsocketServer::processRequests()
+{
+	std::map<std::string, Command>::iterator it;
+	while(true){
+		m_cv.wait(m_ulock, [this]{
+			return m_commands.size()>0 && (!m_requests.empty() || m_exit);
+		});
+
+		if(m_exit){
+			break;
+		}
+
+		Client& client=m_requests.front();
+
+		std::string& command=client.m_command;
+		std::size_t n=command.find_first_of(':');
+		if(n!= std::string::npos){
+			it=m_commands.find(command.substr(0, n));
+
+			if(it!=m_commands.end()){
+				std::string result=it->second(command.substr(n+1));
+				sendData(client.m_fd, result);
+			}
+		}
+		m_requests.pop();
+	}
 }
 
 //----------------------------------------------------------------------
@@ -340,9 +341,9 @@ const char* WebsocketServer::base64Encode(const char* input)
 
 void WebsocketServer::rawHash(const std::string& str2)
 {
+	static SHA1 m_sha1;
 	m_hashSha1[0]=0;
-	m_sha1.update(str2);
-	std::string&& str=m_sha1.final();
+	std::string&& str=m_sha1(str2);
 
 	unsigned char a;
 	unsigned int j=0;

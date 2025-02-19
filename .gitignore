@@ -1,6 +1,9 @@
 *~
-CMakeCache.txt
-CMakeFiles/
 bin/
-Makefile
-cmake_install.cmake
+build/
+lib/
+examples/bin
+examples/build
+lib/libwebsocket_server.so
+sha1_lib/lib
+sha1_lib/build

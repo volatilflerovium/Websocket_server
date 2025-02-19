@@ -1,48 +1,61 @@
-# ------------------------------------------------------------------------------
-# Header
-# ------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.18)
 
-cmake_minimum_required(VERSION 3.6)
-project(Server-Client)
+project(Websocket_server_lib)
 
-find_package (Threads)
+########################################################################
 
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
-
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ------------------------------------------------------------------------------
-# Executable
-# ------------------------------------------------------------------------------
+add_compile_options("-O3")
 
-include_directories(${CMAKE_BINARY_DIR}/include)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+find_package(Threads REQUIRED)
 
-set(SOURCES1
-	example_cmds.cpp
+add_subdirectory("sha1_lib")
+
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../bin)
+
+option(BUILD_SHARED_LIB "Build the static library" ON)
+
+if(BUILD_SHARED_LIB)
+	set(LIB_TYPE SHARED)
+else()
+	set(LIB_TYPE STATIC)
+endif()
+
+set(SHA1_LIB "sha1sum")
+
+#=====================================================================
+
+set(WEBSOCKET_SERVER_LIB websocket_server)
+
+add_library(
+	"${WEBSOCKET_SERVER_LIB}"
+	"${LIB_TYPE}"
 	websocket_server.cpp
 )
 
-add_executable(example_cmds ${SOURCES1})
-target_compile_definitions(example_cmds PUBLIC SERVER=1)
-target_link_libraries(example_cmds ${CMAKE_THREAD_LIBS_INIT})
-
-
-set(SOURCES2
-	example_gps.cpp
-	websocket_server.cpp
+target_include_directories(
+	"${WEBSOCKET_SERVER_LIB}"
+	PUBLIC
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sha1_lib/include" 
 )
 
-add_executable(example_gps ${SOURCES2})
-target_compile_definitions(example_gps PUBLIC SERVER=2)
-target_link_libraries(example_gps ${CMAKE_THREAD_LIBS_INIT})
-
-set(SOURCES3
-	example3.cpp
-	websocket_server.cpp
+target_link_libraries(
+	"${WEBSOCKET_SERVER_LIB}"
+	PRIVATE
+	"${SHA1_LIB}"
+	Threads::Threads
 )
 
-add_executable(example3 ${SOURCES3})
-target_compile_definitions(example3 PUBLIC SERVER=3)
-target_link_libraries(example3 ${CMAKE_THREAD_LIBS_INIT})
+set_target_properties(
+	"${WEBSOCKET_SERVER_LIB}"
+	PROPERTIES
+	ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+	LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+)
+
+######################################################################

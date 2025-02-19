@@ -3,7 +3,14 @@
 #include <iostream>
 #include <fstream>
 
-#include "websocket_server.h"
+#include "websocket/websocket_server.h"
+
+
+#ifdef DATA_FILE //DATA_FILE set in CMakeLists.txt
+#define GPS_FILE_DATA DATA_FILE
+#else
+#define GPS_FILE_DATA "../Websocket_GPS_path/GPS_data.txt"
+#endif
 
 sig_atomic_t signal_caught = 0;
 bool exitLoop=false;
@@ -29,10 +36,8 @@ int main(int argc, char** argv)
 
 	try {
 		WebsocketServer server("127.0.0.1", PORT);
-		//WebSocketServer server(INADDR_LOOPBACK, PORT);//INADDR_ANY
 		serverPtr=&server;
 
-		//*
 		Command cmd1=[](const std::string& data){
 			return "Do some calculations and return result as string.";
 		};
@@ -50,22 +55,24 @@ int main(int argc, char** argv)
 		std::thread processReq(&WebsocketServer::processRequests, &server);
 		
 		std::ifstream gpsData;
-		gpsData.open("Websocket_GPS_path/GPS_data.txt");
+		gpsData.open(GPS_FILE_DATA);
 
-		std::string coordinates;
-		coordinates.reserve(100);
-		while(true){
-			if(exitLoop){
-				break;
+		if(!gpsData.is_open()){
+			std::string coordinates;
+			coordinates.reserve(100);
+			while(true){
+				if(exitLoop){
+					break;
+				}
+				if(server.clientsListening()){
+					std::getline(gpsData, coordinates);
+					server.pushData(coordinates);
+					coordinates.clear();
+				}
+				usleep(1000000);
 			}
-			if(server.clientsListening()){
-				std::getline(gpsData, coordinates);
-				server.pushData(coordinates);
-				coordinates.clear();
-			}
-			usleep(1000000);
-		}//*/
-		
+		}
+
 		processReq.join();
 	}
 	catch (const std::exception &e) {
